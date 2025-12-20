@@ -100,6 +100,7 @@ agentic-underwriting-backend/data/fabric_cache/**/*.json
 
 # Backend data (treat as non-public for GitHub)
 agentic-underwriting-backend/data/**
+agentic-underwriting-ui/public/sampledata/**
 
 # (Optional) If you don't want local .deployment files tracked
 **/.deployment
