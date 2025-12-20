@@ -1,0 +1,105 @@
+# Local notes and internal docs
+/private_gitignore/
+
+# Environment files
+**/.env
+**/.env.*
+**/*.env
+
+# Deployment packages
+**/*.zip
+**/deploy.zip
+
+# Local deployment/testing helpers (do not publish)
+agentic-underwriting-backend/CURL_Testing.md
+agentic-underwriting-backend/deploy_backend_appsv.ps1
+
+# Secrets / credentials / certificates
+**/*.pem
+**/*.key
+**/*.crt
+**/*.cer
+**/*.pfx
+**/*.p12
+**/*.snk
+**/*secret*
+**/*secrets*
+
+########################################
+# OS / Editor
+########################################
+
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# VS Code (keep workspace settings optional)
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+########################################
+# Python
+########################################
+
+__pycache__/
+**/__pycache__/
+**/__pycache__/**
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual envs
+.env/
+.venv/
+venv/
+ENV/
+env/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# Test/coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+########################################
+# Node / Next.js
+########################################
+
+node_modules/
+.pnp
+.pnp.*
+
+# Next build output
+.next/
+out/
+
+# Turbopack
+.turbo/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Vercel
+.vercel/
+
+# Backend Fabric cache JSON (generated)
+agentic-underwriting-backend/data/fabric_cache/**/*.json
+
+# Backend data (treat as non-public for GitHub)
+agentic-underwriting-backend/data/**
+
+# (Optional) If you don't want local .deployment files tracked
+**/.deployment
