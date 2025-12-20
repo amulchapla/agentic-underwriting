@@ -1,4 +1,4 @@
-# Agentic Underwriting (Pilot)
+# Agentic Underwriting
 
 An end-to-end underwriting copilot experience that combines a web UI with an agentic backend to accelerate case review, surface key risk signals, and produce explainable AI decision support.
 
@@ -9,19 +9,7 @@ An end-to-end underwriting copilot experience that combines a web UI with an age
 - Transparent recommendations with explainability to support review
 - Better alignment to policy and compliance expectations
 
-### Business Value Diagram (PNG)
-
 ![Business value diagram](docs/images/business-value.png)
-
-### Business Value Diagram (Mermaid)
-
-```mermaid
-flowchart LR
-  A[Diverse Data Inputs\n\n• Property / Asset Data\n• Claims History\n• Geospatial & Weather Data\n• Underwriting Manuals\n• Regulatory & Policy Rules]
-  B[Azure AI Multi-Agent System\n\n• Decision Intelligence Agent\n• Risk Assessment Agent\n• Knowledge Agent\n• Location Intelligence Agent\n• Compliance Agent]
-  C[Outcomes\n\n• Automated Risk Scoring\n• Human Review Guidance & Routing\n• Transparent Recommendations\n• Compliance Alignment\n• Faster Quote Decisions]
-  A --> B --> C
-```
 
 ## Solution Highlights
 
@@ -42,26 +30,11 @@ This section shows two views:
 - **Logical architecture**: a high-level view of how data sources feed an agent system to produce user-facing outcomes.
 - **Reference architecture**: a more detailed view showing the UI workbench and agent roles.
 
-### Logical Architecture (PNG)
-
 ![Logical architecture diagram](docs/images/logical-architecture.png)
 
-### Reference Architecture (PNG)
+### Multi-agent Architecture
 
 ![Architecture diagram](docs/images/architecture.png)
-
-### Architecture Diagram (Mermaid)
-
-```mermaid
-flowchart LR
-  U[User] --> UI[Underwriting Workbench UI]
-  UI --> API[Backend API]
-  API --> AG[Agent Orchestration]
-  AG --> DS[(Data Sources)]
-  AG --> AI[AI Provider]
-  AG --> API
-  API --> UI
-```
 
 ## How to Use
 

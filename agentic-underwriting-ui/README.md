@@ -8,7 +8,7 @@ Frontend web application for the Agentic Underwriting solution.
 
 For the overall solution view, see the repository root documentation.
 
-## Configuration (Public-Safe)
+## Configuration
 
 This application expects a backend API base URL via an environment variable:
 
