@@ -1,0 +1,31 @@
+# Allowed CORS origins (JSON array string)
+CORS_ORIGINS=["http://localhost:3000"]
+
+# Azure AI Foundry (Fabric Agent)
+FOUNDRY_FABRIC_AGENT_ENDPOINT="https://<your-foundry-resource>.services.ai.azure.com/api/projects/<your-project-id>"
+FOUNDRY_FABRIC_AGENT_NAME="underwriting-fabric-agent"
+
+# Azure AI Foundry (Knowledge Agent)
+FOUNDRY_KNOWLEDGE_AGENT_ENDPOINT="https://<your-foundry-resource>.services.ai.azure.com/api/projects/<your-project-id>"
+FOUNDRY_KNOWLEDGE_AGENT_NAME="underwriting-knowledge-agent"
+
+# Application Insights (use full connection string from Azure Portal)
+APPLICATIONINSIGHTS_CONNECTION_STRING="InstrumentationKey=<your-instrumentation-key>;IngestionEndpoint=<your-ingestion-endpoint>;LiveEndpoint=<your-live-endpoint>;ApplicationId=<your-application-id>"
+
+# OpenTelemetry service name
+OTEL_SERVICE_NAME="agentic-underwriting-backend"
+
+# Azure OpenAI
+AZURE_OPENAI_ENDPOINT="https://<your-azure-openai-resource>.openai.azure.com/"
+AZURE_OPENAI_DEPLOYMENT="<your-deployment-name>"
+
+# Azure Maps
+AZURE_MAPS_BASE="https://atlas.microsoft.com"
+AZURE_MAPS_SCOPE="https://atlas.microsoft.com/.default"
+AZURE_MAPS_CLIENT_ID="<your-azure-maps-client-id>"
+
+# Azure AI Foundry auth scope
+FOUNDRY_OPENAI_SCOPE="https://ai.azure.com/.default"
+
+# OpenAI API version
+OPENAI_API_VERSION="2025-05-15-preview"

@@ -1,0 +1,5 @@
+{
+    "Show 10 rows from the claims table with claim_id, loss_date, state, county_code, zip, total_paid.": "SELECT claim_id, loss_date, state, county_code, zip, total_paid\r\nFROM dbo.fema_nfip_claims_fact_gold\r\nORDER BY loss_date DESC\r\nOFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;",
+    "Question: “For TX, county_code 201, year 2017, return paid_total, claims_count, and avg paid per claim.": "SELECT\r\n  state, county_code, loss_year, paid_total, claims_count,\r\n  CASE WHEN claims_count > 0 THEN paid_total * 1.0 / claims_count ELSE 0 END AS avg_paid_per_claim\r\nFROM dbo.fema_nfip_geo_year_gold\r\nWHERE state = 'TX' AND county_code = '201' AND loss_year = 2017;",
+    "Top 10 TX counties in 2017 by avg paid per claim where claims_count > 50.": "SELECT TOP (10)\r\n  county_code, paid_total, claims_count,\r\n  paid_total * 1.0 / NULLIF(claims_count, 0) AS avg_paid_per_claim\r\nFROM dbo.fema_nfip_geo_year_gold\r\nWHERE state = 'TX' AND loss_year = 2017 AND claims_count > 50\r\nORDER BY avg_paid_per_claim DESC;\r\n"
+}
