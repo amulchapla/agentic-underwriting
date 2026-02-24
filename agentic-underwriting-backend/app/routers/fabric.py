@@ -20,9 +20,20 @@ from app.services.agents.fabric_risk_assessment import (
 from app.services.data_access.local_repo import get_case
 import logging
 import re
+import sys
 
 router = APIRouter(prefix="/api/fabric", tags=["fabric"])
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+_uvicorn_err = logging.getLogger("uvicorn.error")
+if _uvicorn_err.handlers:
+    for _h in _uvicorn_err.handlers:
+        logger.addHandler(_h)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+    logger.addHandler(_handler)
+logger.propagate = False
 
 
 @router.get("/property-summary/{case_id}", response_model=FabricPropertySummary)
@@ -35,6 +46,8 @@ async def fetch_property_summary(
     
     Returns cached data if available, otherwise fetches from Fabric (10-20s).
     """
+    sys.stderr.write(f"\n>>> [FABRIC] property-summary called for case_id={case_id}, force_refresh={force_refresh}\n")
+    sys.stderr.flush()
     
     # Load case to get state/county
     case_doc = get_case(case_id)
@@ -66,6 +79,11 @@ async def fetch_property_summary(
         )
         
         if not summary:
+            msg = f"[FABRIC ERROR] Property summary returned None for case {case_id} (state={state}, county={county_code})"
+            sys.stderr.write(f"\n>>> {msg}\n")
+            sys.stderr.flush()
+            print(msg, flush=True)
+            logger.error(msg)
             raise HTTPException(
                 status_code=503, 
                 detail="Fabric data unavailable - please try again later"
@@ -76,6 +94,7 @@ async def fetch_property_summary(
     except HTTPException:
         raise
     except Exception as e:
+        print(f"[FABRIC ERROR] Property summary exception for case {case_id}: {e}", flush=True)
         logger.error(f"Fabric property summary error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -113,6 +132,8 @@ async def fetch_zip_stats(
     Returns cached data if available, otherwise fetches from Fabric (10-20s).
     Used for decisioning confidence context.
     """
+    sys.stderr.write(f"\n>>> [FABRIC] zip-stats called for case_id={case_id}, years={years}, force_refresh={force_refresh}\n")
+    sys.stderr.flush()
     
     # Load case to get ZIP code
     case_doc = get_case(case_id)
@@ -137,6 +158,11 @@ async def fetch_zip_stats(
         )
         
         if not stats:
+            msg = f"[FABRIC ERROR] ZIP stats returned None for case {case_id} (zip={zip_code}, years={years})"
+            sys.stderr.write(f"\n>>> {msg}\n")
+            sys.stderr.flush()
+            print(msg, flush=True)
+            logger.error(msg)
             raise HTTPException(
                 status_code=503, 
                 detail="Fabric data unavailable - please try again later"
@@ -147,6 +173,7 @@ async def fetch_zip_stats(
     except HTTPException:
         raise
     except Exception as e:
+        print(f"[FABRIC ERROR] ZIP stats exception for case {case_id}: {e}", flush=True)
         logger.error(f"Fabric ZIP stats error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -163,6 +190,8 @@ async def fetch_risk_assessment(
     Returns cached data if available, otherwise fetches from Fabric (10-20s).
     Used for Risk Assessment tab analytics.
     """
+    sys.stderr.write(f"\n>>> [FABRIC] risk-assessment called for case_id={case_id}, min_loss={min_loss}, force_refresh={force_refresh}\n")
+    sys.stderr.flush()
     
     # Load case to get county code
     case_doc = get_case(case_id)
@@ -187,6 +216,11 @@ async def fetch_risk_assessment(
         )
         
         if not assessment:
+            msg = f"[FABRIC ERROR] Risk assessment returned None for case {case_id} (county={county_code}, min_loss={min_loss})"
+            sys.stderr.write(f"\n>>> {msg}\n")
+            sys.stderr.flush()
+            print(msg, flush=True)
+            logger.error(msg)
             raise HTTPException(
                 status_code=503,
                 detail="Fabric data unavailable - please try again later"
@@ -197,5 +231,6 @@ async def fetch_risk_assessment(
     except HTTPException:
         raise
     except Exception as e:
+        print(f"[FABRIC ERROR] Risk assessment exception for case {case_id}: {e}", flush=True)
         logger.error(f"Fabric risk assessment error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

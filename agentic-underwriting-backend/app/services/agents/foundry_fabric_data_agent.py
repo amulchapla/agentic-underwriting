@@ -18,10 +18,17 @@ except Exception:
 FOUNDRY_ENDPOINT = os.getenv("FOUNDRY_FABRIC_AGENT_ENDPOINT")
 FOUNDRY_AGENT_NAME = os.getenv("FOUNDRY_FABRIC_AGENT_NAME")
 
-client = FoundryFabricDataAgentClient(
-    endpoint=FOUNDRY_ENDPOINT,
-    agent_name=FOUNDRY_AGENT_NAME,
-)
+print(f"[FABRIC INIT] Creating FoundryFabricDataAgentClient: endpoint={FOUNDRY_ENDPOINT}, agent_name={FOUNDRY_AGENT_NAME}", flush=True)
+try:
+    client = FoundryFabricDataAgentClient(
+        endpoint=FOUNDRY_ENDPOINT,
+        agent_name=FOUNDRY_AGENT_NAME,
+    )
+    print(f"[FABRIC INIT] Client created successfully, agent resolved: {client.agent.name}", flush=True)
+except Exception as e:
+    print(f"[FABRIC INIT ERROR] Failed to create client: {e}", flush=True)
+    import traceback; traceback.print_exc()
+    client = None
 
 
 # =============================================================================
@@ -32,10 +39,15 @@ def property_support_summary(top_n: int = 7, state: str = "TX", countyCode: str 
     Summarize recent NFIP claims and flood exposure for UI summary highlights.
     Returns a structured dict identical to the legacy Fabric Data Agent.
     """
+    if client is None:
+        print("[FABRIC ERROR] Client is None - initialization failed at startup", flush=True)
+        return {"status": "error", "columns": 0, "rows": 0, "comments": "Client initialization failed", "summary": "", "response": []}
     prompt = (
         f"Summarize recent NFIP claims and flood exposure for 15 counties where paid amount is not $0 for {state} state;"
     )
+    print(f"[FABRIC CALL] Function A: prompt={prompt[:150]}", flush=True)
     result = client.ask_structured(prompt)
+    print(f"[FABRIC RESULT] Function A: status={result.status}, rows={result.rows}, comments={result.comments[:200] if result.comments else ''}", flush=True)
     return result.model_dump()
 
 
@@ -44,6 +56,9 @@ def property_support_summary(top_n: int = 7, state: str = "TX", countyCode: str 
 # =============================================================================
 def decisioning_claim_freq_avg_loss_zip(zip_code: str = "48141", years: int = 10) -> Dict[str, Any]:
     """Claim frequency and average loss by ZIP over the past N years."""
+    if client is None:
+        print("[FABRIC ERROR] Client is None - initialization failed at startup", flush=True)
+        return {"status": "error", "columns": 0, "rows": 0, "comments": "Client initialization failed", "summary": "", "response": []}
     prompt = (
         "Return a table with columns zip, loss_year, claims_count, avg_loss "
         "where claims_count = COUNT(*) and avg_loss = AVG(total_paid) "
@@ -61,6 +76,9 @@ def decisioning_claim_freq_avg_loss_zip(zip_code: str = "48141", years: int = 10
 # =============================================================================
 def risk_assessment_severity_and_large_losses(county_code: str = "26163", min_loss: int = 1) -> Dict[str, Any]:
     """Severity comparison and large-loss drilldown for the Risk Assessment tab."""
+    if client is None:
+        print("[FABRIC ERROR] Client is None - initialization failed at startup", flush=True)
+        return {"severity": {"status": "error"}, "large_losses": {"status": "error"}}
     prompt_severity = (
         f"show Average Claim Severity county vs state for county code {county_code} by year for the latest 10 years;"
     )

@@ -16,6 +16,16 @@ from app.services.cache.fabric_cache import (
 from app.models.schemas import FabricPropertySummary, FabricCountyClaimRow
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+_uvicorn_err = logging.getLogger("uvicorn.error")
+if _uvicorn_err.handlers:
+    for _h in _uvicorn_err.handlers:
+        logger.addHandler(_h)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+    logger.addHandler(_handler)
+logger.propagate = False
 
 
 def get_property_summary(
@@ -57,11 +67,15 @@ def get_property_summary(
         
         # Check status
         if raw_response.get("status") == "error":
-            logger.error(f"Fabric Function A error: {raw_response.get('comments', 'Unknown error')}")
+            msg = f"[FABRIC ERROR] Function A error: {raw_response.get('comments', 'Unknown error')} | Full response: {raw_response}"
+            print(msg, flush=True)
+            logger.error(msg)
             return None
         
         if raw_response.get("status") == "no_data":
-            logger.warning(f"Fabric Function A returned no data: {raw_response.get('comments', '')}")
+            msg = f"[FABRIC WARNING] Function A returned no data: {raw_response.get('comments', '')} | Full response: {raw_response}"
+            print(msg, flush=True)
+            logger.warning(msg)
             return None
         
         # Parse response array into typed rows
@@ -78,6 +92,7 @@ def get_property_summary(
                 continue
         
         if not rows:
+            print(f"[FABRIC WARNING] Function A: No valid rows parsed from response. Raw response_data: {response_data}", flush=True)
             logger.warning("No valid rows in Fabric response")
             return None
         
@@ -113,6 +128,8 @@ def get_property_summary(
         return summary
     
     except Exception as e:
+        print(f"[FABRIC ERROR] Function A unexpected exception: {e}", flush=True)
+        import traceback; traceback.print_exc()
         logger.error(f"Fabric Function A error: {e}")
         return None
 

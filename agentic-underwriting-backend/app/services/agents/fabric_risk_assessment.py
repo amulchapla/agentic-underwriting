@@ -16,6 +16,16 @@ from app.services.cache.fabric_cache import (
 from app.services.agents.foundry_fabric_data_agent import risk_assessment_severity_and_large_losses
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+_uvicorn_err = logging.getLogger("uvicorn.error")
+if _uvicorn_err.handlers:
+    for _h in _uvicorn_err.handlers:
+        logger.addHandler(_h)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+    logger.addHandler(_handler)
+logger.propagate = False
 
 CACHE_TTL_HOURS = 72
 
@@ -66,7 +76,9 @@ def get_risk_assessment(
         large_losses_table = _build_agent_table(large_losses_data, "large_losses")
 
         if not _table_has_rows(severity_table) and not _table_has_rows(large_losses_table):
-            logger.warning("No valid data in Fabric response")
+            msg = f"[FABRIC WARNING] Function C: No valid data in response for county={county_code} | severity={severity_data} | large_losses={large_losses_data}"
+            print(msg, flush=True)
+            logger.warning(msg)
             return None
         
         # Build assessment
@@ -100,6 +112,8 @@ def get_risk_assessment(
         return assessment
     
     except Exception as e:
+        print(f"[FABRIC ERROR] Function C unexpected exception: {e}", flush=True)
+        import traceback; traceback.print_exc()
         logger.error(f"Error fetching Function C data: {e}")
         return None
 

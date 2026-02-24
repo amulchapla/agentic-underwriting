@@ -17,6 +17,16 @@ from app.services.cache.fabric_cache import (
 from app.services.agents.foundry_fabric_data_agent import decisioning_claim_freq_avg_loss_zip
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+_uvicorn_err = logging.getLogger("uvicorn.error")
+if _uvicorn_err.handlers:
+    for _h in _uvicorn_err.handlers:
+        logger.addHandler(_h)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+    logger.addHandler(_handler)
+logger.propagate = False
 
 CACHE_TTL_HOURS = 72
 
@@ -61,11 +71,15 @@ def get_zip_stats(
         
         # Check status
         if raw_response.get("status") == "error":
-            logger.error(f"Fabric Function B error: {raw_response.get('comments', 'Unknown error')}")
+            msg = f"[FABRIC ERROR] Function B error: {raw_response.get('comments', 'Unknown error')} | Full response: {raw_response}"
+            print(msg, flush=True)
+            logger.error(msg)
             return None
         
         if raw_response.get("status") == "no_data":
-            logger.warning(f"Fabric Function B returned no data: {raw_response.get('comments', '')}")
+            msg = f"[FABRIC WARNING] Function B returned no data: {raw_response.get('comments', '')} | Full response: {raw_response}"
+            print(msg, flush=True)
+            logger.warning(msg)
             return None
         
         # Aggregate response data
@@ -107,6 +121,8 @@ def get_zip_stats(
         return stats
     
     except Exception as e:
+        print(f"[FABRIC ERROR] Function B unexpected exception: {e}", flush=True)
+        import traceback; traceback.print_exc()
         logger.error(f"Error fetching Function B data: {e}")
         return None
 

@@ -128,6 +128,7 @@ class FoundryFabricDataAgentClient:
 
             output_text = getattr(response, "output_text", None)
             if not output_text:
+                print(f"[FABRIC ERROR] Foundry agent returned empty output_text for question: {question[:200]}", flush=True)
                 logger.error("Foundry agent returned empty output_text")
                 return FabricAgentResponse(
                     status="error",
@@ -141,6 +142,7 @@ class FoundryFabricDataAgentClient:
             try:
                 parsed = json.loads(output_text)
             except json.JSONDecodeError as exc:
+                print(f"[FABRIC ERROR] Failed to parse JSON from Foundry agent: {exc}. Raw: {output_text[:500]}", flush=True)
                 logger.error(f"Failed to parse JSON from Foundry agent: {exc}. Raw: {output_text}")
                 return FabricAgentResponse(
                     status="error",
@@ -164,6 +166,7 @@ class FoundryFabricDataAgentClient:
                 )
                 return FabricAgentResponse(**parsed)
             except Exception as exc:
+                print(f"[FABRIC ERROR] Parsed JSON did not match schema: {exc}. Parsed: {str(parsed)[:500]}", flush=True)
                 logger.error(f"Parsed JSON did not match schema: {exc}. Parsed: {parsed}")
                 return FabricAgentResponse(
                     status="error",
@@ -177,6 +180,7 @@ class FoundryFabricDataAgentClient:
         except Exception as exc:
             request_id = _extract_request_id(str(exc))
             log_suffix = f" request_id={request_id}" if request_id else ""
+            print(f"[FABRIC ERROR] Foundry agent call failed:{log_suffix} | {exc}", flush=True)
             logger.error(f"Foundry agent call failed:{log_suffix} | {exc}")
             return FabricAgentResponse(
                 status="error",
